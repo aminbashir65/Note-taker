@@ -1,30 +1,21 @@
-var PORT = process.env.PORT || 3001;
-var express = require("express");
-var app = express();
-var path = require("path");
-var fs = require("fs");
+const express = require("express");
+const fs = require("fs");
 
-// express middleware
-app.use(express.urlencoded({
-    extended: true
-}))
+
+// Express App
+var app = express();
+var PORT = process.env.PORT || 3001
+
+// set up the Express middleware app to handle data parsing
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"))
 
-// Routes
-app.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, "public/index.html"));
-  });
-  app.get("/notes", function(req, res) {
-    res.sendFile(path.join(__dirname, "public/notes.html"));
-  });
-app.get("/api/notes", function(req, res) {
-    fs.readFile("db/db.json", "utf-8", function(err, data){
-        if (err) throw err
-        var notes = JSON.parse(data)
-       res.json(notes);
-    })
-  });
+
+require("./routes/html-routes")(app);
+require("./routes/api-routes")(app);
+
+// Starts the server to begin listening
 app.listen(PORT, function() {
-    console.log("app is listening on port" + PORT)
-})
+    console.log("App listening on PORT " + PORT);
+});
